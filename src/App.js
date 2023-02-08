@@ -1,8 +1,13 @@
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import {
+  Route,
+  Routes,
+  useNavigate,
+  useLocation,
+  BrowserRouter as Router,
+  Link,
+} from "react-router-dom";
 import Home from "./pages/Home";
 import CityList from "./pages/CityList";
-
-import { Button } from "antd-mobile";
 
 function App() {
   return (
@@ -17,8 +22,10 @@ function App() {
           </li>
         </ul>
 
-        <Route path="/home" component={Home}></Route>
-        <Route path="/citylist" component={CityList}></Route>
+        <Routes>
+          <Route path="/home/*" element={<Home />} />
+          <Route path="/citylist" element={<CityList />} />
+        </Routes>
       </div>
     </Router>
   );
