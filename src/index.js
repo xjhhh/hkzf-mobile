@@ -2,7 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 
-import "antd-mobile/cjs/components/button/button.css";
+// 导入字体图标库
+import "./assets/fonts/iconfont.css";
 import "./index.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

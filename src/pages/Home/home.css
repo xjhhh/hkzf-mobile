@@ -1,0 +1,21 @@
+.app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.bottom {
+  flex: 0;
+  --adm-color-primary: #21b97a;
+  --adm-color-text-secondary: #888888;
+}
+
+.bottom .iconfont {
+  font-size: 20px;
+}
