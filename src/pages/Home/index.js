@@ -8,7 +8,10 @@ import {
   Navigate,
 } from "react-router-dom";
 import "./home.css";
+import Index from "../Index";
+import FindHouse from "../FindHouse";
 import News from "../News";
+import Profile from "../Profile";
 
 const Bottom = () => {
   const navigate = useNavigate();
@@ -22,24 +25,24 @@ const Bottom = () => {
 
   const tabs = [
     {
-      key: "home",
+      key: "index",
       title: "首页",
-      icon: <i className="iconfont icon-ind" />,
+      icon: "icon-ind",
     },
     {
-      key: "search",
+      key: "findHouse",
       title: "找房",
-      icon: <i className="iconfont icon-findHouse" />,
+      icon: "icon-findHouse",
     },
     {
-      key: "message",
+      key: "news",
       title: "资讯",
-      icon: <i className="iconfont icon-infom" />,
+      icon: "icon-infom",
     },
     {
-      key: "me",
+      key: "profile",
       title: "我的",
-      icon: <i className="iconfont icon-my" />,
+      icon: "icon-my",
     },
   ];
   return (
@@ -47,7 +50,7 @@ const Bottom = () => {
       {tabs.map((item) => (
         <TabBar.Item
           key={item.key}
-          icon={item.icon}
+          icon={<i className={`iconfont ${item.icon}`} />}
           title={item.title}
           badge={item.badge}
         />
@@ -58,37 +61,20 @@ const Bottom = () => {
 export default class Home extends React.Component {
   render() {
     return (
-      <div>
-        <Routes>
-          <Route path="news" element={<News />} />
-        </Routes>
-        <div className="app">
-          <div className="body">
-            <Routes>
-              <Route path="home" element={<Home0 />} />
-              <Route path="search" element={<Search />} />
-              <Route path="message" element={<Message />} />
-              <Route path="me" element={<PersonalCenter />} />
-              <Route path="*" element={<Navigate to="me" />}></Route>
-            </Routes>
-          </div>
-          <div className="bottom">
-            <Bottom />
-          </div>
+      <div className="app">
+        <div className="body">
+          <Routes>
+            <Route path="index" element={<Index />} />
+            <Route path="findHouse" element={<FindHouse />} />
+            <Route path="news" element={<News />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="*" element={<Navigate to="index" />}></Route>
+          </Routes>
+        </div>
+        <div className="bottom">
+          <Bottom />
         </div>
       </div>
     );
   }
-}
-function Home0() {
-  return <div>首页0</div>;
-}
-function Search() {
-  return <div>待办</div>;
-}
-function Message() {
-  return <div>消息</div>;
-}
-function PersonalCenter() {
-  return <div>我的</div>;
 }
