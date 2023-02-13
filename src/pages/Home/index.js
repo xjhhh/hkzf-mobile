@@ -17,36 +17,35 @@ const Bottom = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { pathname } = location;
-  const paths = pathname.split("/");
 
   const setRouteActive = (value) => {
-    navigate(value, { replace: true });
+    navigate(value);
   };
 
   const tabs = [
     {
-      key: "index",
+      key: "/home",
       title: "首页",
       icon: "icon-ind",
     },
     {
-      key: "findHouse",
+      key: "/home/findHouse",
       title: "找房",
       icon: "icon-findHouse",
     },
     {
-      key: "news",
+      key: "/home/news",
       title: "资讯",
       icon: "icon-infom",
     },
     {
-      key: "profile",
+      key: "/home/profile",
       title: "我的",
       icon: "icon-my",
     },
   ];
   return (
-    <TabBar activeKey={paths[2]} onChange={(value) => setRouteActive(value)}>
+    <TabBar activeKey={pathname} onChange={(value) => setRouteActive(value)}>
       {tabs.map((item) => (
         <TabBar.Item
           key={item.key}
@@ -64,11 +63,10 @@ export default class Home extends React.Component {
       <div className="app">
         <div className="body">
           <Routes>
-            <Route path="index" element={<Index />} />
-            <Route path="findHouse" element={<FindHouse />} />
-            <Route path="news" element={<News />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="*" element={<Navigate to="index" />}></Route>
+            <Route path="/" element={<Index />} />
+            <Route path="/findHouse" element={<FindHouse />} />
+            <Route path="/news" element={<News />} />
+            <Route path="/profile" element={<Profile />} />
           </Routes>
         </div>
         <div className="bottom">
