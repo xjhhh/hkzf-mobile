@@ -1,12 +1,7 @@
 import React from "react";
 import { TabBar, Badge } from "antd-mobile";
-import {
-  Route,
-  Routes,
-  useNavigate,
-  useLocation,
-  Navigate,
-} from "react-router-dom";
+import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
+
 import "./home.css";
 import Index from "../Index";
 import FindHouse from "../FindHouse";
