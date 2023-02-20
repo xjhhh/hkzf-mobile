@@ -40,7 +40,7 @@ const Bottom = () => {
     },
   ];
   return (
-    <TabBar activeKey={pathname} onChange={(value) => setRouteActive(value)}>
+    <TabBar activeKey={pathname} onChange={(key) => setRouteActive(key)}>
       {tabs.map((item) => (
         <TabBar.Item
           key={item.key}
