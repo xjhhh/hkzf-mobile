@@ -55,7 +55,7 @@ export default class Index extends React.Component {
 
   renderSwipers() {
     if (!this.state.swipers.length) {
-      return <Swiper.Item></Swiper.Item>;
+      return <Swiper.Item style={{ height: 212 }}></Swiper.Item>;
     }
     return this.state.swipers.map((item) => (
       <Swiper.Item key={item.id}>
