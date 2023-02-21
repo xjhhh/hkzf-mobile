@@ -1,5 +1,5 @@
 import React from "react";
-import { TabBar, Badge } from "antd-mobile";
+import { TabBar } from "antd-mobile";
 import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
 
 import "./home.css";
