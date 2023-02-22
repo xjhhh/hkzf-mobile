@@ -1,0 +1,22 @@
+.nav {
+  padding: 10px 0;
+  .adm-tab-bar-item {
+    padding: 0;
+  }
+  .adm-tab-bar-item-icon {
+    height: 48px;
+  }
+  img {
+    width: 48px;
+  }
+  .adm-tab-bar-item-title {
+    line-height: normal;
+  }
+  .adm-tab-bar-item-title-with-icon {
+    margin-top: 7px;
+  }
+  h2 {
+    font-size: 13px;
+    font-weight: normal;
+  }
+}
