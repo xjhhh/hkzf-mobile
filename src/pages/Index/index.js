@@ -1,5 +1,5 @@
 import React from "react";
-import { TabBar, Swiper, Grid, Space, Button } from "antd-mobile";
+import { TabBar, Swiper, Grid, Space, Button, AutoCenter } from "antd-mobile";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Nav1 from "../../assets/images/nav-1.png";
@@ -41,6 +41,7 @@ export default class Index extends React.Component {
   state = {
     swipers: [],
     groups: [],
+    news: [],
   };
 
   async getSwipers() {
@@ -59,9 +60,19 @@ export default class Index extends React.Component {
     this.setState({ groups: res.data.body });
   }
 
+  async getNews() {
+    const res = await axios.get("http://localhost:8080/home/news", {
+      params: {
+        area: "AREA%7C88cff55c-aaa4-e2e0",
+      },
+    });
+    this.setState({ news: res.data.body });
+  }
+
   componentDidMount() {
     this.getSwipers();
     this.getGroups();
+    this.getNews();
   }
 
   renderSwipers() {
@@ -105,6 +116,27 @@ export default class Index extends React.Component {
     );
   }
 
+  renderNews() {
+    return this.state.news.map((item) => (
+      <div className="news-item" key={item.id}>
+        <div className="imgwrap">
+          <img
+            className="img"
+            src={`http://localhost:8080${item.imgSrc}`}
+            alt=""
+          />
+        </div>
+        <Space className="content" direction="vertical" justify="between">
+          <h3 className="title">{item.title}</h3>
+          <Space className="info" justify="between">
+            <span>{item.from}</span>
+            <span>{item.date}</span>
+          </Space>
+        </Space>
+      </div>
+    ));
+  }
+
   render() {
     return (
       <div style={{ width: "100%" }}>
@@ -117,6 +149,10 @@ export default class Index extends React.Component {
             租房小组 <span className="more">更多</span>
           </h3>
           {this.renderGroups()}
+        </div>
+        <div className="news">
+          <h3 className="group-title">最新资讯</h3>
+          <AutoCenter>{this.renderNews()}</AutoCenter>
         </div>
       </div>
     );
