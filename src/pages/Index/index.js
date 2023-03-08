@@ -37,6 +37,28 @@ const Navs = () => {
     </TabBar>
   );
 };
+
+const Location = () => {
+  const navigate = useNavigate();
+  const setRoute = (route) => {
+    navigate(route);
+  };
+  return (
+    <div className="search-box">
+      <div className="search">
+        <div className="location" onClick={() => setRoute("/citylist")}>
+          <span className="name">上海</span>
+          <i className="iconfont icon-arrow" />
+        </div>
+        <div className="form" onClick={() => setRoute("/search")}>
+          <i className="iconfont icon-seach" />
+          <span className="text">请输入小区或地址</span>
+        </div>
+      </div>
+      <i className="iconfont icon-map" onClick={() => setRoute("/map")} />
+    </div>
+  );
+};
 export default class Index extends React.Component {
   state = {
     swipers: [],
@@ -144,28 +166,7 @@ export default class Index extends React.Component {
           <Swiper loop autoplay autoplayInterval={5000}>
             {this.renderSwipers()}
           </Swiper>
-          <div className="search-box">
-            <div className="search">
-              <div
-                className="location"
-                // onClick={() => this.props.history.push("/citylist")}
-              >
-                <span className="name">上海</span>
-                <i className="iconfont icon-arrow" />
-              </div>
-              <div
-                className="form"
-                // onClick={() => this.props.history.push("/search")}
-              >
-                <i className="iconfont icon-seach" />
-                <span className="text">请输入小区或地址</span>
-              </div>
-            </div>
-            <i
-              className="iconfont icon-map"
-              // onClick={() => this.props.history.push("/map")}
-            />
-          </div>
+          <Location />
         </div>
         <Navs />
         <div className="group">
