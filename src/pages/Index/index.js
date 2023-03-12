@@ -37,7 +37,7 @@ const Navs = () => {
     </TabBar>
   );
 };
-const Location = () => {
+const Location = (props) => {
   const navigate = useNavigate();
   const setRoute = (route) => {
     navigate(route);
@@ -46,7 +46,7 @@ const Location = () => {
     <div className="search-box">
       <div className="search">
         <div className="location" onClick={() => setRoute("/citylist")}>
-          <span className="name">上海</span>
+          <span className="name">{props.cityName}</span>
           <i className="iconfont icon-arrow" />
         </div>
         <div className="form" onClick={() => setRoute("/search")}>
@@ -63,6 +63,7 @@ export default class Index extends React.Component {
     swipers: [],
     groups: [],
     news: [],
+    curCityName: "",
   };
 
   async getSwipers() {
@@ -94,6 +95,17 @@ export default class Index extends React.Component {
     this.getSwipers();
     this.getGroups();
     this.getNews();
+
+    //获取城市定位
+    var myCity = new window.BMapGL.LocalCity();
+    myCity.get(async (city) => {
+      const res = await axios.get(
+        `http://localhost:8080/area/info?name=${city.name}`
+      );
+      this.setState({
+        curCityName: res.data.body.label,
+      });
+    });
   }
 
   renderSwipers() {
@@ -165,7 +177,7 @@ export default class Index extends React.Component {
           <Swiper loop autoplay autoplayInterval={5000}>
             {this.renderSwipers()}
           </Swiper>
-          <Location />
+          <Location cityName={this.state.curCityName} />
         </div>
         <Navs />
         <div className="group">
