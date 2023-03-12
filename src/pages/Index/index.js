@@ -37,7 +37,6 @@ const Navs = () => {
     </TabBar>
   );
 };
-
 const Location = () => {
   const navigate = useNavigate();
   const setRoute = (route) => {
