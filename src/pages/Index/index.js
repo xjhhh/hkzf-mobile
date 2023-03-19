@@ -7,6 +7,7 @@ import Nav2 from "../../assets/images/nav-2.png";
 import Nav3 from "../../assets/images/nav-3.png";
 import Nav4 from "../../assets/images/nav-4.png";
 import "./index.scss";
+import { getCurrentCity } from "../../utils";
 
 const Navs = () => {
   const tabs = [
@@ -40,7 +41,7 @@ const Navs = () => {
 const Location = (props) => {
   const navigate = useNavigate();
   const setRoute = (route) => {
-    navigate(route);
+    navigate(route, { state: props });
   };
   return (
     <div className="search-box">
@@ -91,20 +92,15 @@ export default class Index extends React.Component {
     this.setState({ news: res.data.body });
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this.getSwipers();
     this.getGroups();
     this.getNews();
 
     //获取城市定位
-    var myCity = new window.BMapGL.LocalCity();
-    myCity.get(async (city) => {
-      const res = await axios.get(
-        `http://localhost:8080/area/info?name=${city.name}`
-      );
-      this.setState({
-        curCityName: res.data.body.label,
-      });
+    const cc = await getCurrentCity();
+    this.setState({
+      curCityName: cc.label,
     });
   }
 
