@@ -22,7 +22,7 @@ const Nav = () => {
 const City = (props) => {
   const city = props.city || [];
   const location = useLocation();
-  if (city[0] && city[0].title != "#") {
+  if (city[0] && city[0].title !== "#") {
     city.unshift({
       title: "#",
       items: [location.state.cityName],
@@ -36,7 +36,7 @@ const City = (props) => {
         return (
           <IndexBar.Panel
             index={title}
-            title={title == "#" ? "当前定位" : title}
+            title={title === "#" ? "当前定位" : title}
             key={title}
           >
             <List>
