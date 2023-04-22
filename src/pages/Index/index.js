@@ -38,16 +38,17 @@ const Navs = () => {
     </TabBar>
   );
 };
-const Location = (props) => {
+const Location = ({ city }) => {
   const navigate = useNavigate();
   const setRoute = (route) => {
-    navigate(route, { state: props });
+    navigate(route, { state: { city } });
   };
+  if (!city) return null;
   return (
     <div className="search-box">
       <div className="search">
         <div className="location" onClick={() => setRoute("/citylist")}>
-          <span className="name">{props.cityName}</span>
+          <span className="name">{city.label}</span>
           <i className="iconfont icon-arrow" />
         </div>
         <div className="form" onClick={() => setRoute("/search")}>
@@ -64,7 +65,7 @@ export default class Index extends React.Component {
     swipers: [],
     groups: [],
     news: [],
-    curCityName: "",
+    curCity: null,
   };
 
   async getSwipers() {
@@ -77,7 +78,7 @@ export default class Index extends React.Component {
   async getGroups() {
     const res = await axios.get("http://localhost:8080/home/groups", {
       params: {
-        area: "AREA%7C88cff55c-aaa4-e2e0",
+        area: this.state.curCity.value,
       },
     });
     this.setState({ groups: res.data.body });
@@ -86,7 +87,7 @@ export default class Index extends React.Component {
   async getNews() {
     const res = await axios.get("http://localhost:8080/home/news", {
       params: {
-        area: "AREA%7C88cff55c-aaa4-e2e0",
+        area: this.state.curCity.value,
       },
     });
     this.setState({ news: res.data.body });
@@ -94,14 +95,18 @@ export default class Index extends React.Component {
 
   async componentDidMount() {
     this.getSwipers();
-    this.getGroups();
-    this.getNews();
 
     //获取城市定位
     const cc = await getCurrentCity();
-    this.setState({
-      curCityName: cc.label,
-    });
+    this.setState(
+      {
+        curCity: cc,
+      },
+      () => {
+        this.getGroups();
+        this.getNews();
+      }
+    );
   }
 
   renderSwipers() {
@@ -173,7 +178,7 @@ export default class Index extends React.Component {
           <Swiper loop autoplay autoplayInterval={5000}>
             {this.renderSwipers()}
           </Swiper>
-          <Location cityName={this.state.curCityName} />
+          <Location city={this.state.curCity} />
         </div>
         <Navs />
         <div className="group">
