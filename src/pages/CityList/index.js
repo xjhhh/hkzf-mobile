@@ -4,6 +4,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { IndexBar, List, Toast } from "antd-mobile";
 import NavHeader from "../../components/NavHeader";
 import "./index.scss";
+import styles from "./index.module.css";
+console.log(styles);
 
 const City = (props) => {
   const city = props.city || [];
@@ -14,9 +16,6 @@ const City = (props) => {
       items: [location.state.city],
     });
   }
-  // function onClickCity(curCity) {
-  //   console.log(curCity);
-  // }
   const navigate = useNavigate();
   const onClickCity = ({ label, value }) => {
     const HOUSE_CITY = ["北京", "上海", "广州", "深圳"];
@@ -40,7 +39,11 @@ const City = (props) => {
           >
             <List>
               {items.map((item, index) => (
-                <List.Item key={index} onClick={() => onClickCity(item)}>
+                <List.Item
+                  arrow={false}
+                  key={index}
+                  onClick={() => onClickCity(item)}
+                >
                   {item.label}
                 </List.Item>
               ))}
@@ -85,6 +88,7 @@ export default class CityList extends React.Component {
   render() {
     return (
       <div className="page">
+        <div className={styles.test}>样式覆盖</div>
         <NavHeader>城市选择</NavHeader>
         <City city={this.state.city} />
       </div>
