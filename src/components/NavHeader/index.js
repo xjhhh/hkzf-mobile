@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { NavBar } from "antd-mobile";
 import "./index.scss";
+import styles from "./index.module.css";
 import PropTypes from "prop-types";
 
 NavHeader.propTypes = {
@@ -15,7 +16,7 @@ export default function NavHeader({ children, onLeftClick }) {
   };
   return (
     <NavBar
-      className="navbar"
+      className={styles.navBar}
       backArrow={<i className="iconfont icon-back"></i>}
       onBack={onLeftClick || onBack}
     >

@@ -5,7 +5,7 @@ import { IndexBar, List, Toast } from "antd-mobile";
 import NavHeader from "../../components/NavHeader";
 import "./index.scss";
 import styles from "./index.module.css";
-console.log(styles);
+// console.log(styles);
 
 const City = (props) => {
   const city = props.city || [];
@@ -88,7 +88,7 @@ export default class CityList extends React.Component {
   render() {
     return (
       <div className="page">
-        <div className={styles.test}>样式覆盖</div>
+        {/* <div className={styles.test}>样式覆盖</div> */}
         <NavHeader>城市选择</NavHeader>
         <City city={this.state.city} />
       </div>

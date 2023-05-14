@@ -11,7 +11,7 @@ export default class Map extends React.Component {
   render() {
     return (
       <div className="map">
-        <div className="test">样式覆盖</div>
+        {/* <div className="test">样式覆盖</div> */}
         <NavHeader>地图找房</NavHeader>
         <div id="container"></div>
       </div>
