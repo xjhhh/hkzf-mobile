@@ -1,0 +1,12 @@
+.map {
+  height: 100%;
+  padding-top: 45px;
+}
+
+.container {
+  height: 100%;
+}
+
+.map :global(.adm-nav-bar) {
+  margin-top: -45px;
+}
