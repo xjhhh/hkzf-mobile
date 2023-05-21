@@ -3,6 +3,16 @@ import NavHeader from "../../components/NavHeader";
 import styles from "./index.module.css";
 import { getCurrentCity } from "../../utils";
 const BMapGL = window.BMapGL;
+const labelStyle = {
+  cursor: "pointer",
+  border: "opx solid rgb(255,0 , 0)",
+  padding: "opx",
+  whiteSpace: "nowrap",
+  fontsize: "12px",
+  color: "rgb(255,255,255)",
+  textAlign: "center",
+};
+
 export default class Map extends React.Component {
   async componentDidMount() {
     const { label, value } = await getCurrentCity();
@@ -33,20 +43,21 @@ export default class Map extends React.Component {
           console.log(new BMapGL.Point(116.2787, 40.0492));
           const opts = {
             position: point, // 指定文本标注所在的地理位置
-            // offset: new BMapGL.Size(30, -30), // 设置文本偏移量
+            offset: new BMapGL.Size(-35, -35), // 设置文本偏移量
           };
           // 创建文本标注对象
-          const label = new BMapGL.Label("欢迎使用百度地图JSAPI GL版本", opts);
-          // 自定义文本标注样式
-          label.setStyle({
-            color: "blue",
-            borderRadius: "5px",
-            borderColor: "#ccc",
-            padding: "10px",
-            fontSize: "16px",
-            // height: "30px",
-            lineHeight: "30px",
-            fontFamily: "微软雅黑",
+          const label = new BMapGL.Label("", opts);
+          // 设置房源覆盖物内容
+          label.setContent(`
+            <div class="${styles.bubble}">
+              <p class="${styles.name}">浦东</p>
+              <p>99套</p>
+            </div>`);
+          // 设置样式
+          label.setStyle(labelStyle);
+          // 添加单击事件
+          label.addEventListener("click", () => {
+            console.log("房源覆盖物被点击了");
           });
           map.addOverlay(label);
         } else {
