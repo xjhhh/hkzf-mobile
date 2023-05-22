@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import NavHeader from "../../components/NavHeader";
 import styles from "./index.module.css";
 import { getCurrentCity } from "../../utils";
@@ -21,7 +22,7 @@ export default class Map extends React.Component {
     // 将地址解析结果显示在地图上，并调整地图视野
     myGeo.getPoint(
       label,
-      (point) => {
+      async (point) => {
         if (point) {
           const map = new BMapGL.Map("container");
           map.centerAndZoom(point, 11);
@@ -39,27 +40,43 @@ export default class Map extends React.Component {
               // offset: new BMapGL.Size(150, 150),
             })
           );
-          console.log(point);
-          console.log(new BMapGL.Point(116.2787, 40.0492));
-          const opts = {
-            position: point, // 指定文本标注所在的地理位置
-            offset: new BMapGL.Size(-35, -35), // 设置文本偏移量
-          };
-          // 创建文本标注对象
-          const label = new BMapGL.Label("", opts);
-          // 设置房源覆盖物内容
-          label.setContent(`
-            <div class="${styles.bubble}">
-              <p class="${styles.name}">浦东</p>
-              <p>99套</p>
-            </div>`);
-          // 设置样式
-          label.setStyle(labelStyle);
-          // 添加单击事件
-          label.addEventListener("click", () => {
-            console.log("房源覆盖物被点击了");
+
+          const res = await axios.get(
+            `http://localhost:8080/area/map?id=${value}`
+          );
+          res.data.body.forEach((area) => {
+            const {
+              coord: { longitude, latitude },
+              label: areaName,
+              count,
+              value: areaValue,
+            } = area;
+
+            const areaPoint = new BMapGL.Point(longitude, latitude);
+            const opts = {
+              position: areaPoint, // 指定文本标注所在的地理位置
+              offset: new BMapGL.Size(-35, -35), // 设置文本偏移量
+            };
+            // 创建文本标注对象
+            const label = new BMapGL.Label("", opts);
+            label.id = areaValue;
+            // 设置房源覆盖物内容
+            label.setContent(`
+              <div class="${styles.bubble}">
+                <p class="${styles.name}">${areaName}</p>
+                <p>${count}套</p>
+              </div>`);
+            // 设置样式
+            label.setStyle(labelStyle);
+            // 添加单击事件
+            label.addEventListener("click", () => {
+              console.log("房源覆盖物被点击了", label.id);
+
+              map.centerAndZoom(areaPoint, 13);
+              map.clearOverlays();
+            });
+            map.addOverlay(label);
           });
-          map.addOverlay(label);
         } else {
           alert("您选择的地址没有解析到结果！");
         }
