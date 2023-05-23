@@ -16,73 +16,92 @@ const labelStyle = {
 
 export default class Map extends React.Component {
   async componentDidMount() {
+    this.initMap();
+  }
+
+  async initMap() {
     const { label, value } = await getCurrentCity();
-    //创建地址解析器实例
-    const myGeo = new BMapGL.Geocoder();
-    // 将地址解析结果显示在地图上，并调整地图视野
+    const myGeo = new BMapGL.Geocoder(); //创建地址解析器实例
     myGeo.getPoint(
       label,
       async (point) => {
         if (point) {
           const map = new BMapGL.Map("container");
-          map.centerAndZoom(point, 11);
+          // ......
+          this.map = map;
+          map.centerAndZoom(point, 11); // 将地址解析结果显示在地图上，并调整地图视野
           // map.addOverlay(new BMapGL.Marker(point, { title: label }));
           map.enableScrollWheelZoom(true); //鼠标滚轮控制地图缩放
-          // 添加比例尺控件
           map.addControl(
+            // 添加比例尺控件
             new BMapGL.ScaleControl({
               // offset: new BMapGL.Size(150, 150),
             })
           );
-          // 添加缩放控件
           map.addControl(
+            // 添加缩放控件
             new BMapGL.ZoomControl({
               // offset: new BMapGL.Size(150, 150),
             })
           );
-
-          const res = await axios.get(
-            `http://localhost:8080/area/map?id=${value}`
-          );
-          res.data.body.forEach((area) => {
-            const {
-              coord: { longitude, latitude },
-              label: areaName,
-              count,
-              value: areaValue,
-            } = area;
-
-            const areaPoint = new BMapGL.Point(longitude, latitude);
-            const opts = {
-              position: areaPoint, // 指定文本标注所在的地理位置
-              offset: new BMapGL.Size(-35, -35), // 设置文本偏移量
-            };
-            // 创建文本标注对象
-            const label = new BMapGL.Label("", opts);
-            label.id = areaValue;
-            // 设置房源覆盖物内容
-            label.setContent(`
-              <div class="${styles.bubble}">
-                <p class="${styles.name}">${areaName}</p>
-                <p>${count}套</p>
-              </div>`);
-            // 设置样式
-            label.setStyle(labelStyle);
-            // 添加单击事件
-            label.addEventListener("click", () => {
-              console.log("房源覆盖物被点击了", label.id);
-
-              map.centerAndZoom(areaPoint, 13);
-              map.clearOverlays();
-            });
-            map.addOverlay(label);
-          });
+          this.renderOverlays(value);
         } else {
           alert("您选择的地址没有解析到结果！");
         }
       },
       label
     );
+  }
+
+  async renderOverlays(id) {
+    const { type, nextZoom } = this.getTypeAndRoom();
+    const res = await axios.get(`http://localhost:8080/area/map?id=${id}`);
+    console.log(res.data.body);
+    res.data.body.forEach((area) => {
+      this.createOverlays(area, type, nextZoom);
+    });
+  }
+
+  createOverlays(area, type, zoom) {
+    const {
+      coord: { longitude, latitude },
+      label: areaName,
+      count,
+      value,
+    } = area;
+    const areaPoint = new BMapGL.Point(longitude, latitude);
+    if (type == "rect") {
+    } else {
+      const label = new BMapGL.Label("", {
+        position: areaPoint, // 指定文本标注所在的地理位置
+        offset: new BMapGL.Size(-35, -35), // 设置文本偏移量
+      });
+      // label.id = value;
+      label.setContent(`
+      <div class="${styles.bubble}">
+        <p class="${styles.name}">${areaName}</p>
+        <p>${count}套</p>
+      </div>`); // 设置房源覆盖物内容
+      label.setStyle(labelStyle); // 设置（文本标注对象）样式
+      const map = this.map;
+      label.addEventListener("click", () => {
+        map.clearOverlays();
+        map.centerAndZoom(areaPoint, zoom);
+        this.renderOverlays(value);
+      });
+      map.addOverlay(label);
+    }
+  }
+
+  getTypeAndRoom() {
+    const zoom = this.map.getZoom(); //区11，镇13，小区15
+    const type = {
+      11: "circle",
+      13: "circle",
+      15: "rect",
+    }[zoom];
+    const nextZoom = Math.min(zoom + 2, 15);
+    return { type, nextZoom };
   }
 
   render() {
