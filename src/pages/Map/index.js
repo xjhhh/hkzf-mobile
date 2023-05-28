@@ -18,6 +18,7 @@ const labelStyle = {
 export default class Map extends React.Component {
   state = {
     houseList: [],
+    showHouseList: false,
   };
   async componentDidMount() {
     this.initMap();
@@ -58,15 +59,14 @@ export default class Map extends React.Component {
   }
 
   async renderOverlays(id) {
-    const { type, nextZoom } = this.getTypeAndRoom();
     const res = await axios.get(`http://localhost:8080/area/map?id=${id}`);
     console.log(res.data.body);
     res.data.body.forEach((area) => {
-      this.createOverlays(area, type, nextZoom);
+      this.createOverlays(area);
     });
   }
 
-  createOverlays(area, type, zoom) {
+  createOverlays(area) {
     const {
       coord: { longitude, latitude },
       label: areaName,
@@ -76,20 +76,29 @@ export default class Map extends React.Component {
     const areaPoint = new BMapGL.Point(longitude, latitude);
     let mapSize, labelContent, labelClick;
     const map = this.map;
+
+    const label = new BMapGL.Label("", {
+      position: areaPoint, // 指定文本标注所在的地理位置
+    });
     if (map.getZoom() === 15) {
       //小区
       mapSize = new BMapGL.Size(-50, -28);
       labelContent = `
       <div class="${styles.rect}">
-        <span class="${styles.housename}">${areaName}</span>
-        <span class="${styles.housenum}">${count}套</span>
+        <span class="${styles.houseName}">${areaName}</span>
+        <span class="${styles.houseNum}">${count}套</span>
         <i class="${styles.arrow}"></i>
       </div>`;
       labelClick = async () => {
         const res = await axios.get(
           `http://localhost:8080/houses?cityId=${value}`
         );
-        this.setState({ houseList: res.data.body.list });
+        this.setState({ houseList: res.data.body.list, showHouseList: true });
+        const pixel = this.map.pointToPixel(areaPoint);
+        this.map.panBy(
+          this.map.width / 2 - pixel.x,
+          (this.map.height - 330) / 2 - pixel.y
+        );
       };
     } else {
       mapSize = new BMapGL.Size(-35, -35);
@@ -104,25 +113,17 @@ export default class Map extends React.Component {
         this.renderOverlays(value);
       };
     }
-    const label = new BMapGL.Label("", {
-      position: areaPoint, // 指定文本标注所在的地理位置
-      offset: mapSize, // 设置文本偏移量
-    });
+    label.setOffset(mapSize); // 设置文本偏移量
     // label.id = value;
     label.setContent(labelContent); // 设置房源覆盖物内容
     label.setStyle(labelStyle); // 设置（文本标注对象）样式
     label.addEventListener("click", labelClick);
+    map.addEventListener("dragstart", () => {
+      if (this.state.showHouseList) {
+        this.setState({ showHouseList: false });
+      }
+    });
     map.addOverlay(label);
-  }
-
-  getTypeAndRoom() {
-    const zoom = this.map.getZoom(); //区11，镇13，小区15
-    const type = {
-      11: "circle",
-      13: "rect",
-    }[zoom];
-    const nextZoom = Math.min(zoom + 2, 15);
-    return { type, nextZoom };
   }
 
   renderHouseList() {
@@ -140,11 +141,13 @@ export default class Map extends React.Component {
             <h3 className={styles.title}>{house.title}</h3>
             <div className={styles.desc}>{house.desc}</div>
             <div>
-              {house.tags.map((tag) => {
+              {house.tags.map((tag, i) => {
                 return (
                   <span
                     key={tag}
-                    className={[styles.tag, styles.tag1].join(" ")}
+                    className={[styles.tag, styles["tag" + ((i % 3) + 1)]].join(
+                      " "
+                    )}
                   >
                     {tag}
                   </span>
@@ -171,7 +174,7 @@ export default class Map extends React.Component {
         <div
           className={[
             styles.houseList,
-            this.map && this.map.getZoom() === 15 ? styles.show : "",
+            this.state.showHouseList ? styles.show : "",
           ].join(" ")}
         >
           <div className={styles.titleWrap}>

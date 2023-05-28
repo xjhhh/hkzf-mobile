@@ -51,7 +51,7 @@
   border-top-color: #00a75b;
 }
 
-.housename {
+.houseName {
   display: inline-block;
   width: 70px;
   overflow: hidden;
@@ -60,7 +60,7 @@
   vertical-align: middle;
 }
 
-.housenum {
+.houseNum {
   display: inline-block;
   width: 20px;
   vertical-align: middle;
