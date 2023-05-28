@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import NavHeader from "../../components/NavHeader";
 import styles from "./index.module.css";
@@ -15,6 +16,9 @@ const labelStyle = {
 };
 
 export default class Map extends React.Component {
+  state = {
+    houseList: [],
+  };
   async componentDidMount() {
     this.initMap();
   }
@@ -72,7 +76,8 @@ export default class Map extends React.Component {
     const areaPoint = new BMapGL.Point(longitude, latitude);
     let mapSize, labelContent, labelClick;
     const map = this.map;
-    if (map.getZoom() == 15) {
+    if (map.getZoom() === 15) {
+      //小区
       mapSize = new BMapGL.Size(-50, -28);
       labelContent = `
       <div class="${styles.rect}">
@@ -80,6 +85,12 @@ export default class Map extends React.Component {
         <span class="${styles.housenum}">${count}套</span>
         <i class="${styles.arrow}"></i>
       </div>`;
+      labelClick = async () => {
+        const res = await axios.get(
+          `http://localhost:8080/houses?cityId=${value}`
+        );
+        this.setState({ houseList: res.data.body.list });
+      };
     } else {
       mapSize = new BMapGL.Size(-35, -35);
       labelContent = `
@@ -114,12 +125,63 @@ export default class Map extends React.Component {
     return { type, nextZoom };
   }
 
+  renderHouseList() {
+    return this.state.houseList.map((house) => {
+      return (
+        <div className={styles.house} key={house.houseCode}>
+          <div className={styles.imgWrap}>
+            <img
+              className={styles.img}
+              src={`http://localhost:8080${house.houseImg}`}
+              alt=""
+            />
+          </div>
+          <div className={styles.content}>
+            <h3 className={styles.title}>{house.title}</h3>
+            <div className={styles.desc}>{house.desc}</div>
+            <div>
+              {house.tags.map((tag) => {
+                return (
+                  <span
+                    key={tag}
+                    className={[styles.tag, styles.tag1].join(" ")}
+                  >
+                    {tag}
+                  </span>
+                );
+              })}
+            </div>
+            <div className={styles.price}>
+              <span className={styles.priceNum}>{house.price}</span> 元/月
+            </div>
+          </div>
+        </div>
+      );
+    });
+  }
   render() {
     return (
       <div className={styles.map}>
         {/* <div className="test">样式覆盖</div> */}
         <NavHeader>地图找房</NavHeader>
         <div id="container" className={styles.container}></div>
+
+        {/* 小区房源列表 */}
+        {/* ??? */}
+        <div
+          className={[
+            styles.houseList,
+            this.map && this.map.getZoom() === 15 ? styles.show : "",
+          ].join(" ")}
+        >
+          <div className={styles.titleWrap}>
+            <h1 className={styles.listTitle}>房屋列表</h1>
+            <Link className={styles.titleMore} to="/home/list">
+              更多房源
+            </Link>
+          </div>
+          <div className={styles.houseItems}>{this.renderHouseList()}</div>
+        </div>
       </div>
     );
   }
