@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Toast } from "antd-mobile";
 import axios from "axios";
 import NavHeader from "../../components/NavHeader";
 import styles from "./index.module.css";
@@ -59,11 +60,21 @@ export default class Map extends React.Component {
   }
 
   async renderOverlays(id) {
-    const res = await axios.get(`http://localhost:8080/area/map?id=${id}`);
-    console.log(res.data.body);
-    res.data.body.forEach((area) => {
-      this.createOverlays(area);
+    const ttt = Toast.show({
+      icon: "loading",
+      content: "加载中...",
+      duration: 0,
+      maskClickable: false,
     });
+    try {
+      const res = await axios.get(`http://localhost:8080/area/map?id=${id}`);
+      res.data.body.forEach((area) => {
+        this.createOverlays(area);
+      });
+      ttt.close();
+    } catch (error) {
+      ttt.close();
+    }
   }
 
   createOverlays(area) {
@@ -90,10 +101,21 @@ export default class Map extends React.Component {
         <i class="${styles.arrow}"></i>
       </div>`;
       labelClick = async () => {
-        const res = await axios.get(
-          `http://localhost:8080/houses?cityId=${value}`
-        );
-        this.setState({ houseList: res.data.body.list, showHouseList: true });
+        const ttt = Toast.show({
+          icon: "loading",
+          content: "加载中...",
+          duration: 0,
+          maskClickable: false,
+        });
+        try {
+          const res = await axios.get(
+            `http://localhost:8080/houses?cityId=${value}`
+          );
+          this.setState({ houseList: res.data.body.list, showHouseList: true });
+          ttt.close();
+        } catch (error) {
+          ttt.close();
+        }
         const pixel = this.map.pointToPixel(areaPoint);
         this.map.panBy(
           this.map.width / 2 - pixel.x,
