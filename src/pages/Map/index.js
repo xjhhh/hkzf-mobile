@@ -5,7 +5,7 @@ import axios from "axios";
 import NavHeader from "../../components/NavHeader";
 import styles from "./index.module.css";
 import { getCurrentCity } from "../../utils";
-const BMapGL = window.BMapGL;
+let BMapGL, pageMap;
 const labelStyle = {
   cursor: "pointer",
   border: "opx solid rgb(255,0 , 0)",
@@ -22,10 +22,22 @@ export default class Map extends React.Component {
     showHouseList: false,
   };
   async componentDidMount() {
-    this.initMap();
+    if (!window.initMap) {
+      this.loadScript();
+    }
+  }
+
+  loadScript() {
+    var script = document.createElement("script");
+    script.src =
+      "https://api.map.baidu.com/api?v=1.0&type=webgl&ak=NbnLypMzDhWrUcRoNmivRuigCsMsQWPd&callback=initMap";
+    document.body.appendChild(script);
+    window.initMap = this.initMap;
+    pageMap = this;
   }
 
   async initMap() {
+    BMapGL = window.BMapGL;
     const { label, value } = await getCurrentCity();
     const myGeo = new BMapGL.Geocoder(); //创建地址解析器实例
     myGeo.getPoint(
@@ -34,7 +46,7 @@ export default class Map extends React.Component {
         if (point) {
           const map = new BMapGL.Map("container");
           // ......
-          this.map = map;
+          pageMap.map = map;
           map.centerAndZoom(point, 11); // 将地址解析结果显示在地图上，并调整地图视野
           // map.addOverlay(new BMapGL.Marker(point, { title: label }));
           map.enableScrollWheelZoom(true); //鼠标滚轮控制地图缩放
@@ -50,7 +62,7 @@ export default class Map extends React.Component {
               // offset: new BMapGL.Size(150, 150),
             })
           );
-          this.renderOverlays(value);
+          pageMap.renderOverlays(value);
         } else {
           alert("您选择的地址没有解析到结果！");
         }
